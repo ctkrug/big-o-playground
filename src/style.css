@@ -510,3 +510,61 @@ a {
   color: var(--accent);
   border-color: var(--accent);
 }
+
+.app__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Fit label — the plot's live-updating verdict */
+.fit-label {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  min-height: 1.25em;
+}
+
+.fit-label--success {
+  color: var(--success);
+  animation: fit-pulse 400ms ease-out;
+}
+
+.fit-label--danger {
+  color: var(--danger);
+}
+
+.fit-label--shake {
+  animation: fit-shake 400ms ease-out;
+}
+
+@keyframes fit-pulse {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fit-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
