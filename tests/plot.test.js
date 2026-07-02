@@ -117,6 +117,26 @@ describe('createPlot', () => {
     expect(ctx.arc).toHaveBeenCalledTimes(2);
   });
 
+  it('draws the O(log n) curve with real growth, not a flat zero line, when n=1 is the first sample', () => {
+    // O(log n) is zero at n=1 (log2(1) === 0). Anchoring its normalization
+    // to that point used to force normalizeCurve's zero-guard to collapse
+    // the *entire* curve to zero, so every drawCurve segment landed on the
+    // same y pixel — a flat line along the bottom regardless of the real
+    // logarithmic shape.
+    const { canvas, ctx } = createFakeCanvas();
+    const plot = createPlot(canvas);
+    const samples = [
+      { n: 1, ops: 1 },
+      { n: 100000, ops: 20 },
+    ];
+    plot.render({ samples, curveFn: CURVES['O(log n)'] });
+    // drawCurve is the last thing render() draws lineTo segments for (40 of
+    // them, one per interpolation step past the first) — grid lines are
+    // drawn earlier in the same call and would otherwise mask a flat curve.
+    const curveYs = ctx.lineTo.mock.calls.slice(-40).map(([, y]) => y);
+    expect(new Set(curveYs).size).toBeGreaterThan(1);
+  });
+
   it('resize sets canvas backing-store size to CSS size times devicePixelRatio', () => {
     const { canvas, ctx } = createFakeCanvas({ width: 200, height: 100 });
     vi.stubGlobal('devicePixelRatio', 2);

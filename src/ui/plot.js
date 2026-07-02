@@ -3,7 +3,7 @@
 // best-fit reference curve overlaid and a staggered point-reveal per
 // docs/DESIGN.md's juice plan.
 
-import { normalizeCurve } from '../core/curves.js';
+import { normalizeCurve, pickAnchor } from '../core/curves.js';
 
 const PADDING = { top: 24, right: 28, bottom: 40, left: 64 };
 
@@ -30,7 +30,8 @@ export function computeDomain(samples, curveFn) {
   const opsValues = samples.map((s) => s.ops);
   let curveValues = [];
   if (curveFn) {
-    const normalized = normalizeCurve(curveFn, samples[0].n, Math.max(samples[0].ops, 1));
+    const anchor = pickAnchor(curveFn, samples);
+    const normalized = normalizeCurve(curveFn, anchor.n, Math.max(anchor.ops, 1));
     curveValues = samples.map((s) => normalized(s.n));
   }
   return {
@@ -186,7 +187,8 @@ export function createPlot(canvas) {
     drawGrid(ctx, area, nDomain, opsDomain, width);
 
     if (curveFn && samples.length > 0) {
-      const normalized = normalizeCurve(curveFn, samples[0].n, Math.max(samples[0].ops, 1));
+      const anchor = pickAnchor(curveFn, samples);
+      const normalized = normalizeCurve(curveFn, anchor.n, Math.max(anchor.ops, 1));
       drawCurve(ctx, area, nDomain, opsDomain, normalized, samples);
     }
 
