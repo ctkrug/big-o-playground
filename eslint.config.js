@@ -13,6 +13,7 @@ export default [
         AudioContext: 'readonly',
         Event: 'readonly',
         CustomEvent: 'readonly',
+        KeyboardEvent: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
         matchMedia: 'readonly',
