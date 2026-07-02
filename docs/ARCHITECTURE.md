@@ -88,10 +88,56 @@ generator(n) ──┘   generating a fresh input each time
   real function's source with the generator and size range that makes its
   measured curve legible on first load.
 
+## UI modules (`src/ui/`)
+
+Each is a small `create*(container, options)` factory that renders its own
+markup into a passed-in container and returns a plain object API (no
+framework, per VISION — see D2 in the design standard). `main.js` is the
+only module that wires them together.
+
+- **`editor.js`** — the function paste textarea; `setError(message)` shows
+  an inline parse/runtime error and reddens the border.
+- **`size-picker.js`** — chip/tag input for the `n` values to test;
+  `parseSize` is the pure validation function (positive integers only).
+- **`generator-select.js`** — themed `<select>` over `GENERATORS`.
+- **`sample-library.js`** — one button per `SAMPLES` entry.
+- **`plot.js`** — the canvas renderer:
+  - `computeDomain(samples, curveFn)` / `mapLog(value, domain, range)` are
+    pure and unit-tested directly; the log-log axis math lives here, not
+    inside canvas drawing calls.
+  - `createPlot(canvas)` returns `{ resize, render }`. `render({ samples,
+    curveFn, revealCount, regression })` draws the grid, the curve
+    (normalized to the first sample), and points up to `revealCount` —
+    the staggered-reveal animation is just `main.js` calling `render`
+    repeatedly with an increasing count, not internal canvas animation.
+  - Both `resize`/`render` no-op if `canvas.getContext('2d')` returns
+    null (jsdom in tests; real browsers always have a context).
+- **`sound.js`** — WebAudio-synthesized SFX (`tick`, `matchChime`,
+  `regressionBlip`) plus mute state persisted to `localStorage`. The
+  AudioContext is created lazily inside `playTone`, but **`main.js` is
+  responsible for never calling these before a real user gesture** (a
+  `userHasInteracted` flag gates the automatic first render on page load)
+  — the module itself doesn't know whether a call is gesture-triggered.
+- **`wordmark.js`** — the animated "Big-O Playground" heading; the trace
+  animation is a `<circle>` overlay driven by a CSS keyframe, not JS.
+
+## `main.js` — orchestration
+
+Builds the app shell once, wires each UI module's callbacks into a small
+`state` object (`source`, `generator`, `sizes`), and on "Measure" (or a
+sample-library click): runs `measure()` → `bestFitCurve()` +
+`detectRegression()` → a staggered `revealSamples()` loop
+(`setTimeout`-chained `plot.render` calls) → a match chime or regression
+blip. A resize listener (debounced) re-renders the last result via
+`plot.resize()` + `plot.render(lastRender)` rather than re-measuring.
+
 ## Tests (`tests/`)
 
 Mirrors `src/` one file per module, plus `main.test.js` (jsdom smoke test
-for the app entrypoint). Run with `npm test` (vitest).
+for the wired-up entrypoint). Run with `npm test` (vitest). UI tests use
+`// @vitest-environment jsdom`; canvas-drawing tests inject a fake 2D
+context (`vi.fn()` stubs) rather than relying on jsdom's unimplemented
+`getContext('2d')`.
 
 ## Running locally
 
