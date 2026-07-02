@@ -70,6 +70,28 @@ describe('runInstrumented', () => {
     }
   });
 
+  it('surfaces a non-Error thrown value with a readable message', () => {
+    try {
+      runInstrumented('() => { throw "boom"; }', null);
+      expect.unreachable();
+    } catch (err) {
+      expect(err).toBeInstanceOf(InstrumentationError);
+      expect(err.kind).toBe('runtime');
+      expect(err.message).toBe('boom');
+    }
+  });
+
+  it('falls back to a generic message when an Error is thrown with none', () => {
+    try {
+      runInstrumented('() => { throw new Error(); }', null);
+      expect.unreachable();
+    } catch (err) {
+      expect(err).toBeInstanceOf(InstrumentationError);
+      expect(err.kind).toBe('runtime');
+      expect(err.message).not.toBe('');
+    }
+  });
+
   it('trips the iteration cap on a runaway loop instead of hanging', () => {
     try {
       runInstrumented('() => { let i = 0; while (true) { i++; } }', null, { maxIterations: 1000 });

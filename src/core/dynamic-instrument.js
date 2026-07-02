@@ -346,6 +346,9 @@ export function runInstrumented(source, input, options = {}) {
     return run(input);
   } catch (err) {
     if (err instanceof InstrumentationError) throw err;
-    throw new InstrumentationError(err.message, 'runtime');
+    const message =
+      (err instanceof Error ? err.message : String(err)) ||
+      'The function threw an error while running.';
+    throw new InstrumentationError(message, 'runtime');
   }
 }
