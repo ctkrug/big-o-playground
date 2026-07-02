@@ -46,4 +46,13 @@ describe('createGeneratorSelect', () => {
     expect(picker.getValue()).toBe('nested array');
     expect(onChange).toHaveBeenCalledWith('nested array');
   });
+
+  it('setValue ignores an unknown generator name', () => {
+    const onChange = vi.fn();
+    const container = document.createElement('div');
+    const picker = createGeneratorSelect(container, { initialValue: 'sorted array', onChange });
+    picker.setValue('not-a-generator');
+    expect(picker.getValue()).toBe('sorted array');
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });
