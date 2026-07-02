@@ -68,6 +68,20 @@ describe('runInstrumented', () => {
     expect(runInstrumented(src, -1)).toMatchObject({ result: 4, ops: 3 });
   });
 
+  it('does not yet account for optional chaining short-circuiting the rest of a chain', () => {
+    // Documents a known gap (see docs/ARCHITECTURE.md): unlike ternaries and
+    // &&/||/??, each `?.` link in a chain is counted unconditionally, so a
+    // chain that short-circuits early still reports the same op count as
+    // one that evaluates in full. If this ever starts failing because the
+    // counts diverge, this limitation has been fixed — update the docs and
+    // loosen/replace this test rather than treating the failure as a
+    // regression.
+    const src = 'function f(o) { return o?.a?.b?.c?.d; }';
+    const shortCircuited = runInstrumented(src, null);
+    const fullyEvaluated = runInstrumented(src, { a: { b: { c: { d: 5 } } } });
+    expect(shortCircuited.ops).toBe(fullyEvaluated.ops);
+  });
+
   it('does not count a short-circuited operand of && or ||', () => {
     const src = `function f({ flag, arr }) {
       return flag && (arr[0] + arr[0] + arr[0] + arr[0]);

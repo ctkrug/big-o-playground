@@ -85,6 +85,22 @@ generator(n) ──┘   generating a fresh input each time
   explicit nested loop rather than `.includes()` — see
   `src/samples/library.js`.
 
+  **Second known limitation:** optional chaining (`o?.a?.b`) isn't
+  branch-aware the way ternaries and `&&`/`||`/`??` now are.
+  `countAlwaysExecutedOps` counts every `MemberExpression` link in the
+  chain unconditionally, even though a short-circuit at an earlier `?.`
+  skips evaluating the rest of the chain entirely at runtime — so
+  `o?.a?.b?.c` reports the same op count whether `o` is `null` or fully
+  populated. Fixing this correctly would mean re-deriving `?.`'s
+  short-circuit-to-`undefined` semantics rather than just splicing a
+  counter into an existing branch (the technique that works for
+  ternaries/logical expressions, which are simple either/or splits, not
+  the "any link may end the whole chain" propagation optional chaining
+  has). Left as a known gap rather than risking a subtly wrong rewrite of
+  `?.` semantics for a construct that's rare in the algorithmic code this
+  tool targets (searches, sorts, recursion) — see
+  `tests/run-instrumented.test.js`'s "does not yet account for..." test.
+
 - **`curves.js`** — reference Big-O curves (`O(1)` … `O(2^n)`), each
   normalized (via `pickAnchor` + `normalizeCurve`) to a measured series'
   first sample so shape (not raw magnitude) is what's compared —
