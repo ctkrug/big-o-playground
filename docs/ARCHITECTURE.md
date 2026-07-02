@@ -51,7 +51,10 @@ generator(n) ──┘   generating a fresh input each time
     source with `new Function` and run it, normalizing parse/compile/
     runtime failures into `InstrumentationError` with a `kind` field so
     the UI can render a designed error state instead of a console
-    exception.
+    exception. Generator and async functions are rejected at parse time
+    (`kind: 'parse'`) rather than silently mismeasured — a generator's
+    body doesn't run until its iterator is consumed (always 0 ops), and
+    an async function returns before `run()`'s synchronous op-count read.
 
   **Known limitation:** because the transform only splices into statements
   in the *pasted* source, calls into native built-ins (`.sort()`,
@@ -86,7 +89,11 @@ generator(n) ──┘   generating a fresh input each time
 
 - **`library.js`** — one-click presets (`SAMPLES` array), each pairing a
   real function's source with the generator and size range that makes its
-  measured curve legible on first load.
+  measured curve legible on first load. Five presets: binary search,
+  bubble sort, memoized Fibonacci, a "looks linear, secretly O(n²)" trap,
+  and a threshold-based fallback whose early samples fit O(n) while its
+  later samples fit O(n²) — the only preset that actually exercises
+  `detectRegression`'s divergence path end-to-end.
 
 ## UI modules (`src/ui/`)
 
@@ -98,7 +105,9 @@ only module that wires them together.
 - **`editor.js`** — the function paste textarea; `setError(message)` shows
   an inline parse/runtime error and reddens the border.
 - **`size-picker.js`** — chip/tag input for the `n` values to test;
-  `parseSize` is the pure validation function (positive integers only).
+  `parseSize` is the pure validation function (positive integers only, up
+  to `MAX_SIZE` = 10,000,000, so a typo'd extra zero can't ask a generator
+  to allocate an array that freezes the tab).
 - **`generator-select.js`** — themed `<select>` over `GENERATORS`.
 - **`sample-library.js`** — one button per `SAMPLES` entry.
 - **`plot.js`** — the canvas renderer:
@@ -128,7 +137,10 @@ Builds the app shell once, wires each UI module's callbacks into a small
 sample-library click): runs `measure()` → `bestFitCurve()` +
 `detectRegression()` → a staggered `revealSamples()` loop
 (`setTimeout`-chained `plot.render` calls) → a match chime or regression
-blip. A resize listener (debounced) re-renders the last result via
+blip. `revealSamples` cancels any still-pending reveal step from a prior
+run before starting its own, so re-clicking Measure or picking a new
+sample mid-animation can't leave two staggered-reveal chains racing each
+other. A resize listener (debounced) re-renders the last result via
 `plot.resize()` + `plot.render(lastRender)` rather than re-measuring.
 
 ## Tests (`tests/`)
