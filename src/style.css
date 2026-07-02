@@ -292,6 +292,13 @@ a {
   box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
 }
 
+.editor-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+}
+
 .editor-error {
   margin: 0;
   color: var(--danger);

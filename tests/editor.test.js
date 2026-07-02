@@ -32,6 +32,11 @@ describe('createEditor', () => {
     expect(onChange).toHaveBeenCalledWith('x => x + 1');
   });
 
+  it('renders the Cmd/Ctrl+Enter measure hint', () => {
+    const { container } = setUp();
+    expect(container.querySelector('.editor-hint').textContent).toMatch(/Enter/);
+  });
+
   it('setError shows the error message and marks the textarea', () => {
     const { editor, container } = setUp();
     editor.setError('Unexpected token');

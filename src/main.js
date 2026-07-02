@@ -202,6 +202,16 @@ measureButton.addEventListener('click', () => {
   runMeasurement();
 });
 
+// Cmd/Ctrl+Enter runs the measurement without leaving the editor — the
+// fast-iteration shortcut a paste-and-tweak tool like this needs.
+app.querySelector('#fn-source').addEventListener('keydown', (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+    event.preventDefault();
+    userHasInteracted = true;
+    runMeasurement();
+  }
+});
+
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);

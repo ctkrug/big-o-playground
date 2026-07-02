@@ -53,6 +53,19 @@ describe('main entrypoint', () => {
     expect(app.querySelector('.fit-label').textContent).toContain('O(n^2)');
   });
 
+  it('runs a measurement on Ctrl+Enter from the editor', async () => {
+    await import('../src/main.js');
+    const app = document.getElementById('app');
+    vi.runAllTimers();
+
+    app.querySelector('.fit-label').textContent = '';
+    const textarea = app.querySelector('#fn-source');
+    textarea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }));
+    vi.runAllTimers();
+
+    expect(app.querySelector('.fit-label').textContent).not.toBe('');
+  });
+
   it('shows a friendly prompt instead of "closest match: null" when every size is removed', async () => {
     await import('../src/main.js');
     const app = document.getElementById('app');

@@ -14,6 +14,7 @@ export function createEditor(container, { initialSource = '', onChange } = {}) {
       autocorrect="off"
       rows="10"
     ></textarea>
+    <p class="editor-hint">⌘/Ctrl + Enter to measure</p>
     <p class="editor-error" role="alert" hidden></p>
   `;
 
