@@ -68,6 +68,7 @@ function createFakeCanvas({ width = 800, height = 400 } = {}) {
     fill: vi.fn(),
     arc: vi.fn(),
     fillText: vi.fn(),
+    measureText: vi.fn(() => ({ width: 20 })),
     save: vi.fn(),
     restore: vi.fn(),
     setTransform: vi.fn(),

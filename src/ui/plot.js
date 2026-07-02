@@ -69,7 +69,7 @@ function niceLogTicks([min, max]) {
   return ticks;
 }
 
-function drawGrid(ctx, area, nDomain, opsDomain) {
+function drawGrid(ctx, area, nDomain, opsDomain, canvasWidth) {
   ctx.strokeStyle = 'rgba(30, 74, 115, 0.6)';
   ctx.lineWidth = 1;
   ctx.font = '11px "JetBrains Mono", monospace';
@@ -81,7 +81,9 @@ function drawGrid(ctx, area, nDomain, opsDomain) {
     ctx.moveTo(x, area.y);
     ctx.lineTo(x, area.y + area.height);
     ctx.stroke();
-    ctx.fillText(formatTick(tick), x + 4, area.y + area.height + 16);
+    const label = formatTick(tick);
+    const labelX = Math.min(x + 4, canvasWidth - ctx.measureText(label).width - 2);
+    ctx.fillText(label, labelX, area.y + area.height + 16);
   }
 
   for (const tick of niceLogTicks(opsDomain)) {
@@ -179,7 +181,7 @@ export function createPlot(canvas) {
 
     const area = plotArea(width, height);
     const { nDomain, opsDomain } = computeDomain(samples, curveFn);
-    drawGrid(ctx, area, nDomain, opsDomain);
+    drawGrid(ctx, area, nDomain, opsDomain, width);
 
     if (curveFn && samples.length > 0) {
       const normalized = normalizeCurve(curveFn, samples[0].n, Math.max(samples[0].ops, 1));
