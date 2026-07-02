@@ -181,6 +181,17 @@ function runMeasurement() {
     return;
   }
 
+  if (samples.length === 1) {
+    // A single measurement normalizes exactly onto every reference curve
+    // (there's only one point to match), so bestFitCurve would always
+    // report "O(1)" by tie-break order regardless of the function's real
+    // complexity — a confident-looking but meaningless verdict. Show the
+    // point without claiming a fit instead.
+    setFitLabel('Add another input size to see which curve this fits.', { tone: 'neutral' });
+    revealSamples(samples, null, detectRegression(samples));
+    return;
+  }
+
   const { name: curveName } = bestFitCurve(samples);
   const regression = detectRegression(samples);
   const curveFn = curveName ? CURVES[curveName] : null;

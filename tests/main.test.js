@@ -97,4 +97,24 @@ describe('main entrypoint', () => {
     expect(label).not.toContain('null');
     expect(label).toBe('Add at least one input size to measure.');
   });
+
+  it('does not claim a curve fit from a single measured size', async () => {
+    await import('../src/main.js');
+    const app = document.getElementById('app');
+
+    // Removing all but one chip leaves a single sample, which normalizes
+    // exactly onto every reference curve — a false-confidence trap. The
+    // label should ask for more data instead of naming a curve.
+    let removeButtons = app.querySelectorAll('.chip__remove');
+    while (removeButtons.length > 1) {
+      removeButtons[0].click();
+      removeButtons = app.querySelectorAll('.chip__remove');
+    }
+    app.querySelector('.measure-button').click();
+    vi.runAllTimers();
+
+    const label = app.querySelector('.fit-label').textContent;
+    expect(label).toBe('Add another input size to see which curve this fits.');
+    expect(label).not.toContain('O(');
+  });
 });

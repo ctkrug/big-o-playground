@@ -97,4 +97,14 @@ describe('bestFitCurve', () => {
     }));
     expect(bestFitCurve(samples).name).toBe('O(n log n)');
   });
+
+  it('always names O(1) for a single sample, regardless of the measured op count', () => {
+    // A lone point normalizes exactly onto every reference curve (there's
+    // nothing to compare growth against), so every curve ties at error 0
+    // and O(1) wins by being first in CURVES's declared order. Callers
+    // that show this to a user must special-case length-1 series rather
+    // than trust this name as a real fit — see main.js's single-sample
+    // guard, which does exactly that.
+    expect(bestFitCurve([{ n: 1000, ops: 50_000_000 }])).toEqual({ name: 'O(1)', error: 0 });
+  });
 });
