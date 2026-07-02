@@ -1,20 +1,105 @@
 :root {
   color-scheme: dark;
+
+  /* Blueprint/technical direction — see docs/DESIGN.md */
+  --bg: #0b1e33;
+  --surface-1: #122a47;
+  --surface-2: #183a5e;
+  --grid-line: #1e4a73;
+  --text: #eaf2fb;
+  --text-muted: #8fb0d1;
+  --accent: #ffb454;
+  --accent-support: #5ec8f2;
+  --success: #5fd68a;
+  --danger: #ff6b6b;
+
+  --font-display: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --font-ui: 'Inter', system-ui, sans-serif;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --space-8: 64px;
+
+  --radius-control: 4px;
+  --radius-plot: 2px;
+
+  --glow-accent: 0 0 24px rgba(255, 180, 84, 0.15);
+
+  --motion-ui: 150ms ease-out;
+  --motion-point: 90ms ease-out;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
-  font-family: system-ui, sans-serif;
+  min-height: 100%;
+  background: var(--bg);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 #app {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent-support);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-support);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
