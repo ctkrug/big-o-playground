@@ -1,9 +1,9 @@
 # dependencies
 node_modules/
 
-# build output
+# build output (Vite builds the servable app into site/)
 dist/
-site/dist/
+site/
 
 # logs
 npm-debug.log*

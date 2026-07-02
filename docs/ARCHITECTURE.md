@@ -207,5 +207,6 @@ context (`vi.fn()` stubs) rather than relying on jsdom's unimplemented
 - `npm run dev` — Vite dev server.
 - `npm test` — vitest run (all suites).
 - `npm run lint` — ESLint flat config.
-- `npm run build` — production build to `dist/`, relative-path base (see
-  `vite.config.js`) so it works when served from a subpath.
+- `npm run build` — production build to `site/`, relative-path base (see
+  `vite.config.js`) so it works when served from a subpath. Because the app
+  is servable, `site/` is both the deployed page and the marketing surface.
