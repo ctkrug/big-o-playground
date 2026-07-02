@@ -18,6 +18,15 @@ describe('SAMPLES', () => {
     }
   });
 
+  it('has a unique name per sample', () => {
+    // sample-library.js looks a sample up by `data-name` on click
+    // (SAMPLES.find(s => s.name === button.dataset.name)) — a duplicate
+    // name would make the second sample's button silently select the
+    // first one instead.
+    const names = SAMPLES.map((sample) => sample.name);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
   it('has at least one sample that actually triggers detectRegression', () => {
     // The product's headline feature is catching a function whose growth
     // looks fine for small n and only reveals a worse complexity class
