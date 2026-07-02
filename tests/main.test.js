@@ -27,4 +27,19 @@ describe('main entrypoint', () => {
     const app = document.getElementById('app');
     expect(app.querySelector('.fit-label').textContent).not.toBe('');
   });
+
+  it('shows a friendly prompt instead of "closest match: null" when every size is removed', async () => {
+    await import('../src/main.js');
+    const app = document.getElementById('app');
+
+    let removeButton;
+    while ((removeButton = app.querySelector('.chip__remove'))) {
+      removeButton.click();
+    }
+    app.querySelector('.measure-button').click();
+
+    const label = app.querySelector('.fit-label').textContent;
+    expect(label).not.toContain('null');
+    expect(label).toBe('Add at least one input size to measure.');
+  });
 });

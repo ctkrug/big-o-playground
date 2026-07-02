@@ -153,6 +153,12 @@ function runMeasurement() {
   const generate = GENERATORS[state.generator];
   editor.setError(null);
 
+  if (state.sizes.length === 0) {
+    setFitLabel('Add at least one input size to measure.', { tone: 'neutral' });
+    plot.render({ samples: [] });
+    return;
+  }
+
   let samples;
   try {
     samples = measure(state.source, state.sizes, generate);
